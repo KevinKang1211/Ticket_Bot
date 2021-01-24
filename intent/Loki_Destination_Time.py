@@ -25,6 +25,12 @@ def amountSTRConvert(inputSTR):
     resultDICT = articut.parse(inputSTR, level="lv3")
     return resultDICT
 
+# #新增一個function只抓取articut output的number dict
+# def numberSTRConvert(inputSTR):
+#     resultDICT={}
+#     resultDICT = articut.parse(inputSTR, level="lv3")
+#     return resultDICT['number']
+
 # 將符合句型的參數列表印出。這是 debug 或是開發用的。
 def debugInfo(inputSTR, utterance):
     if DEBUG_Destination_Time:

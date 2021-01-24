@@ -17,6 +17,16 @@
 DEBUG_Children = True
 userDefinedDICT = {"大": ["大人", "成人"], "小": ["小孩", "孩童"]}
 
+from ArticutAPI import ArticutAPI
+articut = ArticutAPI.Articut()
+
+def amountSTRConvert(inputSTR):
+    resultDICT={}
+    resultDICT = articut.parse(inputSTR, level="lv3")
+    return resultDICT['number']
+
+
+
 # 將符合句型的參數列表印出。這是 debug 或是開發用的。
 def debugInfo(inputSTR, utterance):
     if DEBUG_Children:
@@ -25,23 +35,24 @@ def debugInfo(inputSTR, utterance):
 def getResult(inputSTR, utterance, args, resultDICT):
     debugInfo(inputSTR, utterance)
     if utterance == "[三]大[一]小":
+        resultDICT['childrenAmount'] = amountSTRConvert(args[1])[args[1]]
+        pass
+ 
+    if utterance == "[三]小[一]大":
         # write your code here
-        resultDICT["Children"]=args[1]
+        resultDICT['childrenAmount'] = amountSTRConvert(args[0])[args[0]]        
         pass
 
     if utterance == "[三個]大人[兩個]小孩":
-        # write your code here
-        resultDICT["Children"]=args[1]
+        resultDICT['childrenAmount'] = amountSTRConvert(args[1][0])[args[1][0]]  
         pass
 
     if utterance == "[三個]小孩":
-        # write your code here
-        resultDICT["Children"]=args[0]
+        resultDICT['childrenAmount'] = amountSTRConvert(args[0][0])[args[1][0]]
         pass
 
     if utterance == "[三個]小孩[兩個]大人":
-        # write your code here
-        resultDICT["Children"]=args[0]
+        resultDICT['childrenAmount'] = amountSTRConvert(args[0][0])[args[0][0]]      
         pass
 
     return resultDICT
