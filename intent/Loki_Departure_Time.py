@@ -48,9 +48,13 @@ def getResult(inputSTR, utterance, args, resultDICT):
 
     if utterance == "[七點][四十六]分台北到台南的票[一張]":
         # write your code here
-        time = amountSTRConvert(args[0]+args[1])["time"] #讓[七點]、[四十六]分別丟進lv3的轉換，並指定為time那個dict的value? *流程再搞懂一下
-        resultDICT['hour'] = time[0][0]["time_span"]["hour"][0]  #觀察lv3的time最外層有兩個list，故time[0][0]→再來取"timespan"這個key裡面包的"hour"，這個key的value中第一個index
-        resultDICT['minute'] = time[0][0]["time_span"]["minute"][0] #同理'hour'的作法。 *搞清楚這一包的結構(dict混list的寫法，問Keith)
+        time = amountSTRConvert(args[0]+args[1])["time"] 
+#讓[七點]、[四十六]合併list內容後(=七點四十六)丟進articut lv3作轉換(會得到input, entity...等等dictionary)，選擇'time'這個dict並存進time這個變數 → *如同直接在articut網站打七點四十六分
+        resultDICT['hour'] = time[0][0]["time_span"]["hour"][0]  
+#繼續觀察lv3的'time'這個dict最外層有兩個list，故time[0][0]→再來取"timespan"這個key裡面包的"hour"，這個key的value中第一個index
+        resultDICT['minute'] = time[0][0]["time_span"]["minute"][0] #同理'hour'的作法。 
+        
+####*搞清楚這一包的結構(dict混list的寫法，問Keith)
         pass
 
     if utterance == "[三十分]出發的高鐵":
@@ -61,7 +65,7 @@ def getResult(inputSTR, utterance, args, resultDICT):
 
     if utterance == "[九點][半]出發的票":
         # write your code here
-        time = amountSTRConvert(args[0]+args[1])["time"]
+        time = amountSTRConvert(args[0]+args[1])["time"] #9:30
         resultDICT['hour'] = time[0][0]["time_span"]["hour"][0]
         resultDICT['minute'] = time[0][0]["time_span"]["minute"][0]
         pass

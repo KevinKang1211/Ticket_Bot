@@ -215,5 +215,6 @@ if __name__ == "__main__":
     #print(resultDICT)
     print("Result => {}".format(resultDICT))
     print("好的，這邊是您{}點{}分的車票一張，請由1號月台上車，謝謝。".format(resultDICT['hour'], resultDICT['minute']))
+    
     # 設定問答必須要有：人數(年齡考慮)、地點(起+訖)、時間、(@ - 車種、車次)
     #「幾」張票待人數input之後format(大/小或大+小)→ 「幾點幾分」往「哪裡」的票共「幾張」。

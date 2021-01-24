@@ -54,3 +54,4 @@ if __name__ == "__main__":
     with open("THRS_date_no.json", "w", encoding="utf-8") as f:
         result = getTrainNo(curl, date, no)
         json.dump(result, f, ensure_ascii=False)
+    #print(result)
