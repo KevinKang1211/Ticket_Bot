@@ -47,6 +47,7 @@ def getResult(inputSTR, utterance, args, resultDICT):
     if utterance == "[7]:[46]台北到台南的票[一張]":
         # resultDICT['hour'] = args[0]
         # resultDICT['minute'] = args[1]
+        
         resultDICT['date'] = dt.strftime('%Y-%m-%d')
         resultDICT['time'] = args[0]+":"+args[1]
         pass
