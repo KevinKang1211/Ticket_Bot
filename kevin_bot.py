@@ -5,13 +5,36 @@ import discord
 
 from Ticket import ticketPrice, ticketTime
 
-# from Ticket import ticket
-#(舊的)將ticket這個function從Ticket.py輸入
+try:
+    with open("./account.info", "r") as f:
+        accountDICT = json.loads(f.read())
+except:
+    accountDICT = {}
+
+class Articut:
+    def __init__(self, username="", apikey="", version="latest", level="lv2"):
+        '''
+        username = ""    # 你註冊時的 email。若留空，則會使用每小時更新 2000 字的公用帳號。
+        apikey = ""      # 您完成付費後取得的 apikey 值。若留空，則會使用每小時更新 2000 字的公用帳號。
+        '''
+        if "articut" in accountDICT:
+            self.username = accountDICT["articut"]["username"]
+            self.apikey = accountDICT["articut"]["apikey"]
+        else:
+            self.username = username
+            self.apikey = apikey
 
 
-DISCORD_TOKEN="Nzg5Mzc0OTIyMzg3NzUwOTc0.X9xIrw.T5UNAinlV0acZTiKD4n7HeBptUA"
-DISCORD_GUILD="Droidtown Linguistics Tech."
-BOT_NAME = "TicketBot"
+# Discord New Info
+if "discord" in accountDICT:
+    DISCORD_TOKEN = accountDICT["discord"]["token"]
+    DISCORD_GUILD = accountDICT["discord"]["guild"]
+    BOT_NAME = accountDICT["discord"]["name"]
+else:
+    DISCORD_TOKEN = ""
+    DISCORD_GUILD = ""
+    BOT_NAME = ""
+
 
 # Documention
 # https://discordpy.readthedocs.io/en/latest/api.html#client

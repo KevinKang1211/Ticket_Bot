@@ -30,6 +30,17 @@ def getCurl(curl, url):
     resultDICT = json.loads(resultSTR, encoding="utf-8")
     return resultDICT
 
+def getTrainStation(curl, inputSTR):
+    """
+    GET /v2/Rail/THSR/Station
+    取得車站基本資料(StationID)
+    """
+    for info in stationDICT:
+        if info['stationName'] == inputSTR:
+            return info['stationID']
+        else:
+            continue 
+
 def getTrainDate(curl, date):
     """
     GET /v2/Rail/THSR/DailyTrainInfo/TrainDate/{TrainDate}

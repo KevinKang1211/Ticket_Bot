@@ -67,8 +67,8 @@ from ArticutAPI import ArticutAPI
 articut = ArticutAPI.Articut()
 
 LOKI_URL = "https://api.droidtown.co/Loki/BulkAPI/"
-USERNAME = "milanochuang@gmail.com"
-LOKI_KEY = "9gqj7v@AI_1^^o^buxPrHXZ*4E^krJ5"
+USERNAME = "kevink861211@gmail.com"
+LOKI_KEY = "P%F^NEFRy+faY_4*+1hgNr2XvXKqn-M"
 # 意圖過濾器說明
 # INTENT_FILTER = []        => 比對全部的意圖 (預設)
 # INTENT_FILTER = [intentN] => 僅比對 INTENT_FILTER 內的意圖
@@ -212,7 +212,7 @@ def amountSTRConvert(inputSTR):
     resultDICT = articut.parse(inputSTR, level="lv3")
     return resultDICT['number']
 
-#1/22一起完成   
+#1/22新增  
 def ticketTime(message):
     curl = "curl"
     if CURL_PATH != "":
