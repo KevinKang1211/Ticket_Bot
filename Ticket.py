@@ -207,6 +207,7 @@ def runLoki(inputLIST):
     else:
         resultDICT = {"msg": lokiRst.getMessage()}
     return resultDICT
+
 def amountSTRConvert(inputSTR):
     resultDICT={}
     resultDICT = articut.parse(inputSTR, level="lv3")
@@ -223,19 +224,20 @@ def ticketTime(message):
     departure = "台北" #先寫死
     train_date = dt.now().strftime('%Y-%m-%d') #只取符合API的年月日 ex.2020-1-22 
     time = resultDICT['time']
-    # print(resultDICT)
     dtMessageTime = dt.strptime(time, "%H:%M") #取幾時幾分
     destination = resultDICT['destination']
     destinationID = getTrainStation(curl, destination)
     departureID = getTrainStation(curl, departure)
     result = getTrainStationStartEnd(curl, departureID, destinationID, train_date)
+    
     response=list()
     for train in result:
         dtScheduleTime = dt.strptime(train['OriginStopTime']['DepartureTime'], "%H:%M") #一層一層抓API中JSON檔的value，比較時間並指定時間格式
         if(dtScheduleTime > dtMessageTime):
             response.append(train['OriginStopTime']['DepartureTime'])
             continue
-    response.sort()
+    
+    response.sort() #照順序排
     return "以下是您指定時間可搭乘最接近的班次時間:{}".format(response[0])
 
 def ticketPrice(message): #計算票價
@@ -257,14 +259,16 @@ if __name__ == "__main__":
     # print(resultDICT)
     # print("Result => {}".format(resultDICT))
     # print("好的，這邊是您{}點{}分的車票一張，請由1號月台上車，謝謝。".format(resultDICT['hour'], resultDICT['minute']))
-    # 設定問答必須要有：人數(年齡考慮)、地點(起+訖)、時間、(@ - 車種、車次)
-    #「幾」張票待人數input之後format(大/小或大+小)→ 「幾點幾分」往「哪裡」的票共「幾張」。
-
+    '''
+     設定問答必須要有：人數+票價(年齡?)、地點(起+訖)、時間、(@ - 車種、車次)
+    →「幾」張票待人數input之後format(大/小或大+小)→ 「幾點幾分」由「哪裡」往「哪裡」的票共「幾張(不同人數)」，「票價」多少。
+     '''
     # inputLIST = ["三十分出發的高鐵"]
     # resultDICT = runLoki(inputLIST)
     # #time = amountSTRConvert(resultDICT['time'])
     # print("Result => {}".format(resultDICT))
     # result = getTrainStationStartEnd(curl, "0990", "1070", "2021-01-01")
     # print(result)
-    # print(ticketTime('七點四十六分台北到台南的票一張'))
-    print(ticketPrice('五大三小'))
+
+    print(ticketTime('七點四十六分台北到台南的票一張'))
+    print(ticketPrice('三大一小'))

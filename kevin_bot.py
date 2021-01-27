@@ -75,8 +75,11 @@ async def on_message(message):
         else:
             #抓Ticket.py裡面import的function 
             #message.content = 使用者輸入
-            response = ticketPrice(message.content)
-            response = ticketTime(message.content)
+            respPrice = ticketPrice(message.content)
+            respTime  = ticketTime(message.content)
+            response  = respPrice + ", " + respTime
+            # response = ticketPrice(message.content)
+            # response = ticketTime(message.content)
             await message.channel.send(response)
             
     elif "bot 點名" in message.content:
