@@ -68,7 +68,7 @@ articut = ArticutAPI.Articut()
 
 LOKI_URL = "https://api.droidtown.co/Loki/BulkAPI/"
 USERNAME = "kevink861211@gmail.com"
-LOKI_KEY = "P%F^NEFRy+faY_4*+1hgNr2XvXKqn-M"
+LOKI_KEY = "msXV9AIraukXeQKbM^*$+3AaU%7eUqC"
 # 意圖過濾器說明
 # INTENT_FILTER = []        => 比對全部的意圖 (預設)
 # INTENT_FILTER = [intentN] => 僅比對 INTENT_FILTER 內的意圖
@@ -217,15 +217,15 @@ def amountSTRConvert(inputSTR):
 def ticketTime(message):
     curl = "curl"
     if CURL_PATH != "":
-        curl = CURL_PATH
-    
+        curl = CURL_PATH    
+   
     inputLIST = [message]
     resultDICT = runLoki(inputLIST)
     departure = "台北" #先寫死
     train_date = dt.now().strftime('%Y-%m-%d') #只取符合API的年月日 ex.2020-1-22 
     time = resultDICT['time']
     dtMessageTime = dt.strptime(time, "%H:%M") #取幾時幾分
-    destination = resultDICT['destination']
+    destination = resultDICT['Destination']
     destinationID = getTrainStation(curl, destination)
     departureID = getTrainStation(curl, departure)
     result = getTrainStationStartEnd(curl, departureID, destinationID, train_date)
@@ -236,7 +236,6 @@ def ticketTime(message):
         if(dtScheduleTime > dtMessageTime):
             response.append(train['OriginStopTime']['DepartureTime'])
             continue
-    
     response.sort() #照順序排
     return "以下是您指定時間可搭乘最接近的班次時間:{}".format(response[0])
 
@@ -270,5 +269,7 @@ if __name__ == "__main__":
     # result = getTrainStationStartEnd(curl, "0990", "1070", "2021-01-01")
     # print(result)
 
-    print(ticketTime('七點四十六分台北到台南的票一張'))
-    print(ticketPrice('三大一小'))
+
+    # print(ticketTime("我要一張九點半出發的票"))
+    # print(ticketTime('七點四十六分台南到台中的票一張')) #目前都寫死起點是"台北"
+    # print(ticketPrice('五大兩小'))

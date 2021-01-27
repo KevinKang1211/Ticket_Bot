@@ -82,10 +82,6 @@ if __name__ == "__main__":
     # 車次 格式: ####
     no   = "0657"
 
-    #1/22新增: 先寫死起訖站   
-    departureStation = "南港"
-    destinationStation = "嘉義"
-
 
     # 取得指定日期車次資料
     with open("THRS_date.json", "w", encoding="utf-8") as f:
@@ -98,7 +94,7 @@ if __name__ == "__main__":
         json.dump(result, f, ensure_ascii=False)
 
     
-    ### Milan 1/22新增
+    # ------- Milan 1/22新增 --------
 
     #取得車站ID -> 可以使用到[時間][起迄]的函式
     with open("THRS_station.json", "w", encoding="utf-8") as f:

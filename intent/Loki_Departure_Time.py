@@ -78,7 +78,7 @@ def getResult(inputSTR, utterance, args, resultDICT):
         resultDICT['time'] = "{}:{}".format(hour, minute)       #合併上兩行結果
     
         resultDICT['date'] = dt.strftime('%Y-%m-%d') #此行抓出日期並format(年月日)
-        resultDICT['destination'] = "左營"           #沒說目的地的都先寫死給左營
+        resultDICT['Destination'] = "左營"           #沒說目的地的都先寫死給左營
         pass
 
     if utterance == "[九點][半]出發的票":
@@ -90,7 +90,7 @@ def getResult(inputSTR, utterance, args, resultDICT):
         resultDICT['datetime'] = datetime[0][0]["datetime"]
         resultDICT['date'] = datetime[0][0]["datetime"][0:10]
         resultDICT['time'] = datetime[0][0]["datetime"][-8:]
-        resultDICT['destination'] = "左營"
+        resultDICT['Destination'] = "左營"
         pass
 
     if utterance == "我要[一張][7]:[46]到台南的票":
@@ -105,7 +105,7 @@ def getResult(inputSTR, utterance, args, resultDICT):
         # resultDICT['minute'] = args[2]
         resultDICT['date'] = dt.strftime('%Y-%m-%d')
         resultDICT['time'] = args[1]+":"+args[2]
-        resultDICT['destination'] = "左營"
+        resultDICT['Destination'] = "左營"
         pass
 
     if utterance == "我要[一張][七點][四十六]分到台南的票":
@@ -128,9 +128,9 @@ def getResult(inputSTR, utterance, args, resultDICT):
         resultDICT['hour'] = datetime[0][0]["time_span"]["hour"][0]
         resultDICT['minute'] = datetime[0][0]["time_span"]["minute"][0]
         resultDICT['date'] = datetime[0][0]["datetime"][0:10]
-        resultDICT['time'] = datetime[0][0]["datetime"][-8:]
+        resultDICT['time'] = datetime[0][0]["datetime"][-8:-3]
         resultDICT['ticketAmount'] = args[0][0]
-        resultDICT['destination'] = "左營"
+        resultDICT['Destination'] = "左營"
         pass
 
     return resultDICT
