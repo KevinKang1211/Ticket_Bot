@@ -69,6 +69,8 @@ articut = ArticutAPI.Articut()
 LOKI_URL = "https://api.droidtown.co/Loki/BulkAPI/"
 USERNAME = "kevink861211@gmail.com"
 LOKI_KEY = "msXV9AIraukXeQKbM^*$+3AaU%7eUqC"
+#Project Key
+
 # 意圖過濾器說明
 # INTENT_FILTER = []        => 比對全部的意圖 (預設)
 # INTENT_FILTER = [intentN] => 僅比對 INTENT_FILTER 內的意圖
@@ -174,6 +176,7 @@ class LokiResult():
             rst = lokiResultDICT["argument"]
         return rst
 
+#主要run的function，串聯不同intents
 def runLoki(inputLIST):
     resultDICT = {}
     lokiRst = LokiResult(inputLIST)
@@ -205,46 +208,52 @@ def runLoki(inputLIST):
                     resultDICT = Loki_Destination_Time.getResult(key, lokiRst.getUtterance(index, resultIndex), lokiRst.getArgs(index, resultIndex), resultDICT)
 
     else:
-        resultDICT = {"msg": lokiRst.getMessage()}
-    return resultDICT
+        resultDICT = {"msg": lokiRst.getMessage()} #顯示錯誤訊息的地方
+    return resultDICT #正常運作的話return resultDICT
 
+#可看API reference
 def amountSTRConvert(inputSTR):
     resultDICT={}
     resultDICT = articut.parse(inputSTR, level="lv3")
-    return resultDICT['number']
+    return resultDICT['number'] #return LV3跑出的number dict
 
 #1/22新增  
 def ticketTime(message):
     curl = "curl"
     if CURL_PATH != "":
         curl = CURL_PATH    
-   
-    inputLIST = [message]
-    resultDICT = runLoki(inputLIST)
-    departure = "台北" #先寫死
-    train_date = dt.now().strftime('%Y-%m-%d') #只取符合API的年月日 ex.2020-1-22 
-    time = resultDICT['time']
-    dtMessageTime = dt.strptime(time, "%H:%M") #取幾時幾分
-    destination = resultDICT['Destination']
-    destinationID = getTrainStation(curl, destination)
-    departureID = getTrainStation(curl, departure)
-    result = getTrainStationStartEnd(curl, departureID, destinationID, train_date)
     
+    inputLIST = [message] #輸入"list"給Loki跑
+    resultDICT = runLoki(inputLIST)
+    #print("[DEBUG] {}".format(resultDICT)) #Debug技巧，把東西都列出來看
+
+    #時間
+    train_date = dt.now().strftime('%Y-%m-%d') #format(符合API格式用"-")取當下的"年月日" ex.2020-1-22 
+    time = resultDICT['time']
+    dtMessageTime = dt.strptime(time, "%H:%M") #format取當下"幾時幾分" ex. 10:15
+    
+    #起訖站
+    departure = "台北" #先寫死
+    departureID = getTrainStation(curl, departure)
+    destination = resultDICT['Destination'] #部分寫死→response沒有給destination的(ex."左營")
+    destinationID = getTrainStation(curl, destination)
+    
+    #先給個可以append的空list
     response=list()
+    result = getTrainStationStartEnd(curl, departureID, destinationID, train_date)
     for train in result:
-        dtScheduleTime = dt.strptime(train['OriginStopTime']['DepartureTime'], "%H:%M") #一層一層抓API中JSON檔的value，比較時間並指定時間格式
+        dtScheduleTime = dt.strptime(train['OriginStopTime']['DepartureTime'], "%H:%M") #一層一層抓API中JSON檔的value，比較時間並指定時間格式→為了找當下最近時間的班次
         if(dtScheduleTime > dtMessageTime):
             response.append(train['OriginStopTime']['DepartureTime'])
             continue
     response.sort() #照順序排
-    return "以下是您指定時間可搭乘最接近的班次時間:{}".format(response[0])
+    return "以下是您指定時間可搭乘最接近的班次時間:{}".format(response[0]) #list中的第0個index照順序排後會是最接近的時間
+
 
 def ticketPrice(message): #計算票價
-    # curl = "curl"
-    # if CURL_PATH != "":
-    #     curl = CURL_PATH
     inputLIST = [message]
     resultDICT = runLoki(inputLIST)
+    #print("[DEBUG] {}".format(resultDICT))
     adultAmount = int(resultDICT['adultAmount'])
     childrenAmount = int(resultDICT['childrenAmount'])
     totalPrice = 1490*adultAmount + 745*childrenAmount
@@ -252,6 +261,10 @@ def ticketPrice(message): #計算票價
 
 
 if __name__ == "__main__":
+
+    '''
+    Problem: 如何用if/else去判斷inputLIST有沒有包含我們需要的argument
+    '''
     #inputLIST = ["七點半出發的票"]
     # inputLIST = [input("請問您要幾點到哪裡？")]
     # resultDICT = runLoki(inputLIST)
@@ -262,14 +275,8 @@ if __name__ == "__main__":
      設定問答必須要有：人數+票價(年齡?)、地點(起+訖)、時間、(@ - 車種、車次)
     →「幾」張票待人數input之後format(大/小或大+小)→ 「幾點幾分」由「哪裡」往「哪裡」的票共「幾張(不同人數)」，「票價」多少。
      '''
-    # inputLIST = ["三十分出發的高鐵"]
-    # resultDICT = runLoki(inputLIST)
-    # #time = amountSTRConvert(resultDICT['time'])
-    # print("Result => {}".format(resultDICT))
-    # result = getTrainStationStartEnd(curl, "0990", "1070", "2021-01-01")
-    # print(result)
 
-
+    #---測試---
     # print(ticketTime("我要一張九點半出發的票"))
     # print(ticketTime('七點四十六分台南到台中的票一張')) #目前都寫死起點是"台北"
     # print(ticketPrice('五大兩小'))

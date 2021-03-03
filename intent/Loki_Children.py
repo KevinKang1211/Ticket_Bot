@@ -39,7 +39,6 @@ def getResult(inputSTR, utterance, args, resultDICT):
         pass
  
     if utterance == "[三]小[一]大":
-        # write your code here
         resultDICT['childrenAmount'] = amountSTRConvert(args[0])[args[0]]        
         pass
 

@@ -85,6 +85,8 @@ def getResult(inputSTR, utterance, args, resultDICT):
         # time = amountSTRConvert(args[0]+args[1])["time"] #9:30
         # resultDICT['hour'] = time[0][0]["time_span"]["hour"][0]
         # resultDICT['minute'] = time[0][0]["time_span"]["minute"][0]
+        
+        # args [九點, 半]
         resultDICT['ticketAmount'] = 1
         datetime = amountSTRConvert(args[0]+args[1])["time"]
         resultDICT['datetime'] = datetime[0][0]["datetime"]

@@ -20,6 +20,7 @@ userDefinedDICT = {"大": ["大人", "成人"], "小": ["小孩", "孩童"]}
 from ArticutAPI import ArticutAPI
 articut = ArticutAPI.Articut()
 
+#輸入以轉換國字表達的數字
 def amountSTRConvert(inputSTR):
     resultDICT={}
     resultDICT = articut.parse(inputSTR, level="lv3")

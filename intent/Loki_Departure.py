@@ -25,16 +25,14 @@ def debugInfo(inputSTR, utterance):
 def getResult(inputSTR, utterance, args, resultDICT):
     debugInfo(inputSTR, utterance)
     if utterance == "[一張]從[台北]往台南的票":
-        # write your code here
         resultDICT["Departure"]=args[1]
         pass
+    
     if utterance == "我要從[台北]到台南的票[一張]":
-        # write your code here
         resultDICT["Departure"]=args[0]
         pass
 
     if utterance == "給我[一張]從[台北]到台南的票":
-        # write your code here
         resultDICT["Departure"]=args[1]
         pass
 

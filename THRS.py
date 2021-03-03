@@ -59,17 +59,23 @@ def getTrainNo(curl, date, no):
     resultDICT = getCurl(curl, trainDateUrl)
     return resultDICT
 
+# ---- 1/22新增 ----
 def getTrainStationStartEnd(curl, departure, destination, date):
     """
     GET /v2/Rail/THSR/DailyTimetable/OD/{OriginStationID}/to/{DestinationStationID}/{TrainDate}
     取得指定[日期],[起迄站間]之時刻表資料
 
-    *Milan寫的function, 對應API必填的參數
+    *format{}去對應API網頁Query時必填的參數
     """
     trainStationTimeUrl = "https://ptx.transportdata.tw/MOTC/v2/Rail/THSR/DailyTimetable/OD/{}/to/{}/{}?$top=30&$format=JSON".format(departure, destination, date)
     resultDICT = getCurl(curl, trainStationTimeUrl)
     return resultDICT
 
+# ---- 1/27新增 ---- (*參數不用給curl嗎?)
+def getTimeTable():
+    TimeTableUrl = "https://ptx.transportdata.tw/MOTC/v2/Rail/THSR/GeneralTimetable?$format=JSON"
+    resultDICT = getCurl(curl, TimeTableUrl)
+    return resultDICT
 
 if __name__ == "__main__":
     # curl 路徑
@@ -92,18 +98,25 @@ if __name__ == "__main__":
     with open("THRS_date_no.json", "w", encoding="utf-8") as f:
         result = getTrainNo(curl, date, no)
         json.dump(result, f, ensure_ascii=False)
-
+    
     
     # ------- Milan 1/22新增 --------
 
     #取得車站ID -> 可以使用到[時間][起迄]的函式
     with open("THRS_station.json", "w", encoding="utf-8") as f:
-        result = getTrainStation(curl, departureStation)
+        result = getTrainStation(curl, departureStation)  #同下個open, 為何給的參數不行?
         json.dump(result, f, ensure_ascii=False)
 
-    #取得指定時間和起訖車站
+    #取得指定時間和起訖車站 (*這個為何不是.JSON且給的參數不行?)
     with open("THRS_station_start_end", "w", encoding = "utf-8") as f:
         departureID = getTrainStation(curl, departureStation)
         destinationID = getTrainStation(curl, destinationStation)
         result = getTrainStationStartEnd(curl, departureID, destinationID, date)
+        json.dump(result, f, ensure_ascii=False)
+
+    #------- 1/27新增 -------
+
+    #取得所有車次的「定期時刻表」資料
+    with open("THRS_timetable.json", "w", encoding = "utf-8") as f:
+        result = getTimeTable()
         json.dump(result, f, ensure_ascii=False)
