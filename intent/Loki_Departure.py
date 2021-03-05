@@ -24,16 +24,35 @@ def debugInfo(inputSTR, utterance):
 
 def getResult(inputSTR, utterance, args, resultDICT):
     debugInfo(inputSTR, utterance)
-    if utterance == "[一張]從[台北]往台南的票":
-        resultDICT["Departure"]=args[1]
-        pass
-    
-    if utterance == "我要從[台北]到台南的票[一張]":
-        resultDICT["Departure"]=args[0]
+    if utterance == "[台北]出發":
+        resultDICT['departure'] = args[0]
         pass
 
-    if utterance == "給我[一張]從[台北]到台南的票":
-        resultDICT["Departure"]=args[1]
+    if utterance == "[台北]去台南":
+        resultDICT['departure'] = args[0]
+        pass
+    
+    if utterance == "[新竹]往台北": #手動新增, Loki下載時沒有顯示，但使用測試工具有分別
+        resultDICT['departure'] = args[0]
+        pass
+
+    if utterance == "[新竹]到台北": #手動新增
+        resultDICT['departure'] = args[0]
+        pass
+
+    if utterance == "從[台北]":
+        if "從{}".format(args[0]) in inputSTR:
+            resultDICT['departure'] = args[0]
+        pass
+
+    if utterance == "從[台北]到台南":
+        if "從{}".format(args[0]) in inputSTR:
+            resultDICT['departure'] = args[0]
+        pass
+
+    if utterance == "從[台北]往台南":
+        if "從{}".format(args[0]) in inputSTR:
+            resultDICT['departure'] = args[0]
         pass
 
     return resultDICT

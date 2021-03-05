@@ -14,22 +14,29 @@
         resultDICT    dict
 """
 
-DEBUG_Destination_Time = True
-userDefinedDICT = {"大": ["大人", "成人"], "小": ["小孩", "孩童"]}
-
 from ArticutAPI import ArticutAPI
 articut = ArticutAPI.Articut()
+import dateparser
+from datetime import datetime
+dt = datetime.now()
+from ref_data import PMList
+
+DEBUG_Destination_Time = True
+userDefinedDICT = {"大": ["大人", "成人"], "小": ["小孩", "孩童"]}
 
 def amountSTRConvert(inputSTR):
     resultDICT={}
     resultDICT = articut.parse(inputSTR, level="lv3")
-    return resultDICT
+    return resultDICT['number']
 
-# #新增一個function只抓取articut output的number dict
-# def numberSTRConvert(inputSTR):
-#     resultDICT={}
-#     resultDICT = articut.parse(inputSTR, level="lv3")
-#     return resultDICT['number']
+def format_identifier(time_STR):
+    if dt.strftime("%p") == "PM":
+        time_STR = time_STR + "PM"
+        dt1 = dateparser.parse(time_STR)
+        time = datetime.strftime(dt1, '%H:%M')
+        return time
+    else:
+        return time_STR
 
 # 將符合句型的參數列表印出。這是 debug 或是開發用的。
 def debugInfo(inputSTR, utterance):
@@ -39,14 +46,14 @@ def debugInfo(inputSTR, utterance):
 def getResult(inputSTR, utterance, args, resultDICT):
     debugInfo(inputSTR, utterance)
     if utterance == "[九點][半][以前]到台南的票":
-        time = amountSTRConvert(args[0]+args[1])["time"]
-        resultDICT['hour'] = time[0][0]["time_span"]["hour"][0]
-        resultDICT['minute'] = time[0][0]["time_span"]["minute"][0]
+        datetime = amountSTRConvert(args[0] + args[1])['time']
+        time_STR = datetime[0][0]["datetime"][-8:-3]
+        resultDICT['destination_time'] = format_identifier(time_STR)
         pass
 
     if utterance == "我要[一張][9]:[30][以前]到台南的票":
-        resultDICT['hour'] = args[1]
-        resultDICT['minute'] = args[2]
+        dt = args[1]+":"+args[2]
+        resultDICT['destination_time'] = format_identifier(dt)
         pass
 
     return resultDICT

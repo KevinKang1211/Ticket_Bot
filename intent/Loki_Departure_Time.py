@@ -14,28 +14,43 @@
         resultDICT    dict
 """
 
+from ArticutAPI import ArticutAPI
+articut = ArticutAPI.Articut()
+from datetime import datetime
+dt = datetime.now()
+import dateparser
+from ref_data import PMList
+
 DEBUG_Departure_Time = True
 userDefinedDICT = {"大": ["大人", "成人"], "小": ["小孩", "孩童"]}
 
-from ArticutAPI import ArticutAPI
-articut = ArticutAPI.Articut()
-
-#為了處理API時間的格式，用datetime的套件
-from datetime import datetime
-dt = datetime.now()
-
-#為了轉換數字；對應articut lv3切出來的dict(i.e. {time})
 def amountSTRConvert(inputSTR):
-    resultDICT={}
-    resultDICT = articut.parse(inputSTR, level="lv3")
-    return resultDICT
-
-#新增一個function只抓取articut output的number dict (為了做時間的處理)
-def numberSTRConvert(inputSTR):
     resultDICT={}
     resultDICT = articut.parse(inputSTR, level="lv3")
     return resultDICT['number']
 
+def timeSTRConvert(inputSTR):
+    resultDICT = {}
+    resultDICT = articut.parse(inputSTR, level="lv3")
+    return resultDICT
+
+def format_convert(PM, time_STR):
+    if PM in PMList:
+        time_STR = time_STR + "PM"
+        dt1 = dateparser.parse(time_STR)
+        time = datetime.strftime(dt1, '%H:%M')
+        return time
+    else:
+        return time_STR
+
+def format_identifier(time_STR):
+    if dt.strftime("%p") == "PM":
+        time_STR = time_STR + "PM"
+        dt1 = dateparser.parse(time_STR)
+        time = datetime.strftime(dt1, '%H:%M')
+        return time
+    else:
+        return time_STR
 
 # 將符合句型的參數列表印出。這是 debug 或是開發用的。
 def debugInfo(inputSTR, utterance):
@@ -44,95 +59,109 @@ def debugInfo(inputSTR, utterance):
 
 def getResult(inputSTR, utterance, args, resultDICT):
     debugInfo(inputSTR, utterance)
-    if utterance == "[7]:[46]台北到台南的票[一張]":
-        # resultDICT['hour'] = args[0]
-        # resultDICT['minute'] = args[1]
-        
-        resultDICT['date'] = dt.strftime('%Y-%m-%d')
-        resultDICT['time'] = args[0]+":"+args[1]
+    if utterance == "[7]:[46]台北到台南":
+        dt = args[0]+":"+args[1]
+        resultDICT['departure_time'] = format_identifier(dt)
         pass
 
-    if utterance == "[9]:[30]出發的票[一張]":
-        # resultDICT['hour'] = args[0]
-        # resultDICT['minute'] = args[1]
-        resultDICT['date'] = dt.strftime('%Y-%m-%d')
-        resultDICT['time'] = args[0]+":"+args[1]
+    if utterance == "[9]:[30]出發":
+        dt = args[0]+":"+args[1]
+        resultDICT['departure_time'] = format_identifier(dt)
         pass
 
-    if utterance == "[七點][四十六]分台北到台南的票[一張]":
-        # time = amountSTRConvert(args[0]+args[1])["time"] #讓[七點]、[四十六]合併list內容後(=七點四十六)丟進articut lv3作轉換(會得到input, entity...等等dictionary)，選擇'time'這個dict並存進time這個變數 → *如同直接在articut網站打七點四十六分 
-        # resultDICT['hour'] = time[0][0]["time_span"]["hour"][0]  #繼續觀察lv3的'time'這個dict最外層有兩個list，故time[0][0]→再來取"timespan"這個key裡面包的"hour"，這個key的value中第一個index
-        # resultDICT['minute'] = time[0][0]["time_span"]["minute"][0] #同理'hour'的作法。 
-        datetime = amountSTRConvert(args[0]+args[1])["time"]
-        resultDICT['ticketAmount'] = args[2][0]                #計算票的張數
-        resultDICT['date'] = datetime[0][0]["datetime"][0:10] #抓articutAPI中time的日期（前十格）
-        resultDICT['time'] = datetime[0][0]["datetime"][-8:-3] #抓articutAPI中time的時間（後八格）
+    if utterance == "[七點][四十六分]台北往台南":
+        datetime = timeSTRConvert(args[0]+args[1])["time"]
+        dt = datetime[0][0]["datetime"][-8:-3] #抓articutAPI中time的時間（後八格）
+        resultDICT['departure_time'] = format_identifier(dt)
         pass
 
-    if utterance == "[三十分]出發的高鐵":
-        # time = amountSTRConvert(args[0])["time"] 
-        # resultDICT['minute'] = time[0][0]["time_span"]["minute"][0]
-        
-        hour = dt.strftime("%H")                                #因為沒有提到「時」，故把輸入當下的時用套件提出來
-        minute = numberSTRConvert(args[0][0:2])[args[0][0:2]]
-        resultDICT['time'] = "{}:{}".format(hour, minute)       #合併上兩行結果
-    
-        resultDICT['date'] = dt.strftime('%Y-%m-%d') #此行抓出日期並format(年月日)
-        resultDICT['Destination'] = "左營"           #沒說目的地的都先寫死給左營
+    if utterance == "[七點][四十六分]往台南":
+        datetime = timeSTRConvert(args[0]+args[1])["time"]
+        dt = datetime[0][0]["datetime"][-8:-3] #抓articutAPI中time的時間（後八格）
+        resultDICT['departure_time'] = format_identifier(dt)
         pass
 
-    if utterance == "[九點][半]出發的票":
-        # time = amountSTRConvert(args[0]+args[1])["time"] #9:30
-        # resultDICT['hour'] = time[0][0]["time_span"]["hour"][0]
-        # resultDICT['minute'] = time[0][0]["time_span"]["minute"][0]
-        
-        # args [九點, 半]
-        resultDICT['ticketAmount'] = 1
-        datetime = amountSTRConvert(args[0]+args[1])["time"]
-        resultDICT['datetime'] = datetime[0][0]["datetime"]
-        resultDICT['date'] = datetime[0][0]["datetime"][0:10]
-        resultDICT['time'] = datetime[0][0]["datetime"][-8:]
-        resultDICT['Destination'] = "左營"
+    if utterance == "[三十分]出發":
+        if len(args) == 1:  #為了不要重複讀取intent ex. [八點][三十分]..
+            if args[0][-1] in "分一二三四五六七八九十":
+                hour = dt.strftime("%H")
+                minute = amountSTRConvert(args[0][0:2])[args[0][0:2]]
+                resultDICT['departure_time'] = "{}:{}".format(hour, minute)
+            else: 
+                datetime = timeSTRConvert(args[0][0:2])["time"]
+                dt = datetime[0][0]["datetime"][-8:-3]
+                resultDICT['departure_time'] = format_identifier(dt)
         pass
 
-    if utterance == "我要[一張][7]:[46]到台南的票":
-        # resultDICT['hour'] = args[1]
-        # resultDICT['minute'] = args[2]
-        resultDICT['date'] = dt.strftime('%Y-%m-%d')
-        resultDICT['time'] = args[1]+":"+args[2]
+    if utterance == "[下午][三點][五十][之後]":
+        datetime = timeSTRConvert(args[1] + args[2])['time']
+        time_STR = datetime[0][0]["datetime"][-8:-3]
+        resultDICT['departure_time'] = format_convert(args[0], time_STR)
         pass
 
-    if utterance == "我要[一張][9]:[30]出發的票":
-        # resultDICT['hour'] = args[1]
-        # resultDICT['minute'] = args[2]
-        resultDICT['date'] = dt.strftime('%Y-%m-%d')
-        resultDICT['time'] = args[1]+":"+args[2]
-        resultDICT['Destination'] = "左營"
+    if utterance == "[下午][三點][五十分]到台南":
+        datetime = timeSTRConvert(args[1] + args[2])['time']
+        time_STR = datetime[0][0]["datetime"][-8:-3]
+        resultDICT['departure_time'] = format_convert(args[0], time_STR)
         pass
 
-    if utterance == "我要[一張][七點][四十六]分到台南的票":
-        # time = amountSTRConvert(args[1]+args[2])["time"]
-        # resultDICT['hour'] = time[0][0]["time_span"]["hour"][0]
-        # resultDICT['minute'] = time[0][0]["time_span"]["minute"][0]
-        datetime = amountSTRConvert(args[1]+args[2])["time"]
-        resultDICT['hour'] = datetime[0][0]["time_span"]["hour"][0]
-        resultDICT['minute'] = datetime[0][0]["time_span"]["minute"][0]
-        resultDICT['date'] = datetime[0][0]["datetime"][0:10]
-        resultDICT['time'] = datetime[0][0]["datetime"][-8:-3]
-        resultDICT['ticketAmount'] = args[0][0]
+    if utterance == "[下午][三點之後]":
+        datetime = timeSTRConvert(args[1][0:2])['time']
+        time_STR = datetime[0][0]["datetime"][-8:-3]
+        resultDICT['departure_time'] = format_convert(args[0], time_STR)
         pass
 
-    if utterance == "我要[一張][九點][半]出發的票":
-        # time = amountSTRConvert(args[1]+args[2])["time"]
-        # resultDICT['hour'] = time[0][0]["time_span"]["hour"][0]
-        # resultDICT['minute'] = time[0][0]["time_span"]["minute"][0]
-        datetime = amountSTRConvert(args[1]+args[2])["time"]
-        resultDICT['hour'] = datetime[0][0]["time_span"]["hour"][0]
-        resultDICT['minute'] = datetime[0][0]["time_span"]["minute"][0]
-        resultDICT['date'] = datetime[0][0]["datetime"][0:10]
-        resultDICT['time'] = datetime[0][0]["datetime"][-8:-3]
-        resultDICT['ticketAmount'] = args[0][0]
-        resultDICT['Destination'] = "左營"
+    if utterance == "[九點][半]出發":
+        datetime = timeSTRConvert(args[0]+args[1])["time"]
+        time_STR = datetime[0][0]["datetime"][-8:-3]
+        resultDICT['departure_time'] = format_identifier(time_STR)
+        pass
+
+    if utterance == "[五十分]到台南":
+        hour = dt.strftime("%H")
+        minute = timeSTRConvert(args[0][0:2])[args[0][0:2]]
+        resultDICT['departure_time'] = "{}:{}".format(hour, minute)
+        pass
+
+    if utterance == "[五十分]從台北到台中":
+        if len(args) == 1:  
+            if args[0][-1] in "分一二三四五六七八九十":
+                hour = dt.strftime("%H")
+                minute = amountSTRConvert(args[0][0:2])[args[0][0:2]]
+                resultDICT['departure_time'] = "{}:{}".format(hour, minute)
+            else: # 只有時
+                datetime = timeSTRConvert(args[0])["time"]
+                resultDICT['departure_time'] = datetime[0][0]["datetime"][-8:-3]
+        pass
+
+    if utterance == "[五點][五十分]從台北到台中":
+        datetime = timeSTRConvert(args[0]+args[1])["time"]
+        time_STR = datetime[0][0]["datetime"][-8:-3]
+        resultDICT['departure_time'] = format_identifier(time_STR)
+        pass
+
+    if utterance == "[早上][九點][四十]分[之前]":
+        datetime = timeSTRConvert(args[1] + args[2])['time']
+        time_STR = datetime[0][0]["datetime"][-8:-3]
+        resultDICT['departure_time'] = format_convert(args[0], time_STR)
+        pass
+
+    if utterance == "[早上][五點][半]台北到左營":
+        datetime = timeSTRConvert(args[1] + args[2])['time']
+        time_STR = datetime[0][0]["datetime"][-8:-3]
+        resultDICT['departure_time'] = format_convert(args[0], time_STR)
+        pass
+
+    if utterance == "[早上][八點][三十分]出發":
+        datetime = timeSTRConvert(args[1] + args[2])['time']
+        time_STR = datetime[0][0]["datetime"][-8:-3]
+        resultDICT['departure_time'] = format_convert(args[0], time_STR)
+        pass
+
+    if utterance == "[早上][八點]出發":
+        datetime = timeSTRConvert(args[1])['time']
+        time_STR = datetime[0][0]["datetime"][-8:-3]
+        resultDICT['departure_time'] = format_convert(args[0], time_STR)
         pass
 
     return resultDICT
